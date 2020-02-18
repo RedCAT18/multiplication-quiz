@@ -32,8 +32,8 @@ const App = () => {
   const createRecord = () => {
     //문제를 풀 때 마다 기록
     const newRecord = { firstNum, secondNum, input, mark };
-    quizRecords.push(newRecord);
-    setQuizRecords(quizRecords);
+    // quizRecords.push(newRecord);
+    setQuizRecords([...quizRecords, newRecord]);
     // const recordSpace = document.getElementById("record");
     // const prevQuestion = document.createElement("li");
     // const quest = document.createElement("span");
