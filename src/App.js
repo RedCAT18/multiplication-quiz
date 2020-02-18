@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./styles.css";
 
+import Record from "./components/Record";
+
 const App = () => {
   const getRandomNum = () => {
     return Math.ceil(Math.random() * 9);
@@ -12,27 +14,37 @@ const App = () => {
   const [mark, setMark] = useState(""); //정답or오답 체크
   const [gameNum, setGameNum] = useState(1); //문제 수
   const [score, setScore] = useState(0); //점수
-  const [nextQuiz, setNextQuiz] = useState(false);
-  const [resetQuiz, setResetQuiz] = useState(false);
+  const [nextQuiz, setNextQuiz] = useState(false); //다음 퀴즈로 넘어갈 지 여부
+  const [resetQuiz, setResetQuiz] = useState(false); //처음부터 다시 시작할 지 여부
+  const [quizRecords, setQuizRecords] = useState([]); //풀어낸 문제 기록
 
   const handleInput = e => {
     setInput(e.target.value);
   };
 
+  const renderRecord = () => {
+    console.log(quizRecords.length);
+    return quizRecords && quizRecords.length !== 0
+      ? quizRecords.map((r, index) => <Record {...r} key={index} />)
+      : null;
+  };
+
   const createRecord = () => {
     //문제를 풀 때 마다 기록
-
-    const recordSpace = document.getElementById("record");
-    const prevQuestion = document.createElement("li");
-    const quest = document.createElement("span");
-    prevQuestion.classList.add("records__list");
-    quest.innerText = `${firstNum} * ${secondNum} = ${input}`;
-    if (mark === "wrong") {
-      quest.style.color = "red";
-      quest.style.textDecoration = "line-through";
-    }
-    prevQuestion.appendChild(quest);
-    recordSpace.appendChild(prevQuestion);
+    const newRecord = { firstNum, secondNum, input, mark };
+    quizRecords.push(newRecord);
+    setQuizRecords(quizRecords);
+    // const recordSpace = document.getElementById("record");
+    // const prevQuestion = document.createElement("li");
+    // const quest = document.createElement("span");
+    // prevQuestion.classList.add("records__list");
+    // quest.innerText = `${firstNum} * ${secondNum} = ${input}`;
+    // if (mark === "wrong") {
+    //   quest.style.color = "red";
+    //   quest.style.textDecoration = "line-through";
+    // }
+    // prevQuestion.appendChild(quest);
+    // recordSpace.appendChild(prevQuestion);
   };
 
   const finishGame = () => {
@@ -41,8 +53,7 @@ const App = () => {
     setInput("");
     if (window.confirm("Restart your quiz?")) {
       //다시 문제를 풀 경우 모두 초기화
-      const records = document.getElementById("record");
-      records.innerHTML = "";
+      setQuizRecords([]);
       setFirstNum(getRandomNum());
       setSecondNum(getRandomNum());
       setMark("");
@@ -54,7 +65,6 @@ const App = () => {
   };
 
   const nextGame = () => {
-    //성공시 게임 리셋
     createRecord();
     if (gameNum < 10) {
       setGameNum(gameNum + 1);
@@ -114,7 +124,7 @@ const App = () => {
         <div className="answer__mark">{mark}</div>
         <div className="answer__records">
           <h3>Your Quiz Records</h3>
-          <ol id="record" />
+          <ol id="record">{renderRecord()}</ol>
         </div>
         {resetQuiz ? (
           <button className="reset__games" onClick={handleClick}>
